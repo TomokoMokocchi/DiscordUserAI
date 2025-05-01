@@ -266,8 +266,6 @@ if __name__ == "__main__":
                 if pfp.split("size=")[0]!=localpfp.split("size=")[0] or not character in newestmsg and pfp.split("size=")[0]==localpfp.split("size=")[0]:
                     speaker = driver.find_element(By.XPATH, "(//span[@class='headerText_c19a55'])[last()]/span").text
                     try:
-                        if character in newestmsg and pfp.split("size=")[0]==localpfp.split("size=")[0]:
-                            print("DUDE WTF")
                         if pfp.split("size=")[0]!=localpfp.split("size=")[0]:
                             msgthing = driver.find_element(By.XPATH, "(//div[@class='contents_c19a55'])[last()]")
                             action = ActionChains(driver)
