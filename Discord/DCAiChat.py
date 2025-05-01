@@ -14,6 +14,10 @@ import zipfile
 import atexit
 from io import BytesIO
 from selenium.webdriver import ActionChains
+import struct
+
+size_in_bits = str(struct.calcsize("P") * 8)
+print(f"Python is running in {size_in_bits}-bit mode (using struct)")
 
 def get_documents_folder():
     return os.path.expanduser("~/Documents")
@@ -27,7 +31,7 @@ headers = {
 
 history = []
 
-character = "Example"
+character = "Assistant"
 
 lastmsg = ""
 
@@ -50,11 +54,11 @@ def update():
         for item in a:
             if float(item["version"][:5])>=float(lastver[:5]):
                     for temp in item["downloads"]["chromedriver"]:
-                        if temp["platform"]=="win64":
+                        if temp["platform"]=="win"+size_in_bits:
                             lastver = item["version"]
                             latestversion = temp["url"]
                     for temp in item["downloads"]["chrome"]:
-                        if temp["platform"]=="win64":
+                        if temp["platform"]=="win"+size_in_bits:
                             lastver = item["version"]
                             latestchver = temp["url"]
     print("Found update urls: "+latestversion +"\n" +latestchver,flush=True)
@@ -151,9 +155,9 @@ if __name__ == "__main__":
     password = data["Password"]
 
 
-    service = Service(executable_path=os.getcwd()+"/driver/"+driverver+"/chromedriver-win64/chromedriver.exe")
+    service = Service(executable_path=os.getcwd()+"/driver/"+driverver+"/chromedriver-win"+size_in_bits+"/chromedriver.exe")
     options = webdriver.ChromeOptions()
-    options.binary_location = os.getcwd()+"/driver/"+driverver+"/chrome-win64/chrome.exe"
+    options.binary_location = os.getcwd()+"/driver/"+driverver+"/chrome-win"+size_in_bits+"/chrome.exe"
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(service=service, options=options)
 
@@ -195,7 +199,22 @@ if __name__ == "__main__":
                 try:
                     oof = clicklol.find_element(By.XPATH, "./../../../../..")
                     oof.click()
-                except Exception as e:
+                except:
+                    pass
+                try:
+                    oof = clicklol.find_element(By.XPATH, "./../../../..")
+                    oof.click()
+                except:
+                    pass
+                try:
+                    oof = clicklol.find_element(By.XPATH, "./../../../")
+                    oof.click()
+                except:
+                    pass
+                try:
+                    oof = clicklol.find_element(By.XPATH, "./../..")
+                    oof.click()
+                except:
                     pass
                 try:
                     action = ActionChains(driver)
@@ -220,16 +239,20 @@ if __name__ == "__main__":
 
     speaker = character
 
-    time.sleep(2.5)
+    time.sleep(1.5)
+
+    waitforelement(By.XPATH, "//div[@aria-label='Add Friend']").click()
 
     newestmsg = ""
     lastmsg = newestmsg
+    time.sleep(1)
+    localpfp = waitforelement(By.XPATH, "(//img[@class='avatar__44b0c'])[last()]").get_attribute("src")
     driver.minimize_window()
+    print("Found user PFP: "+localpfp)
 
     while True:
         checkpings()
         try:
-            localpfp = driver.find_element(By.XPATH, "(//img[@class='avatar__44b0c'])").get_attribute("src")
             newestmsg = ""
             messagestrings = driver.find_elements(By.XPATH, "(//div[@class='contents_c19a55'])[last()]/div/*")
             for localmsg in messagestrings:
@@ -243,6 +266,8 @@ if __name__ == "__main__":
                 if pfp.split("size=")[0]!=localpfp.split("size=")[0] or not character in newestmsg and pfp.split("size=")[0]==localpfp.split("size=")[0]:
                     speaker = driver.find_element(By.XPATH, "(//span[@class='headerText_c19a55'])[last()]/span").text
                     try:
+                        if character in newestmsg and pfp.split("size=")[0]==localpfp.split("size=")[0]:
+                            print("DUDE WTF")
                         if pfp.split("size=")[0]!=localpfp.split("size=")[0]:
                             msgthing = driver.find_element(By.XPATH, "(//div[@class='contents_c19a55'])[last()]")
                             action = ActionChains(driver)
@@ -253,7 +278,6 @@ if __name__ == "__main__":
                     except Exception as e:
                         pass
 
-                    lastmsg = newestmsg
                     print(speaker+ ": "+newestmsg,flush=True)
                     threading.Thread(target=sendmessage, args=(speaker+ ": "+newestmsg,reply,)).start()
             lastmsg = newestmsg

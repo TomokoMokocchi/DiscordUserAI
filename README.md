@@ -1,3 +1,5 @@
+NOTICE: Currently this only works on windows machines! (Unless you modify how the python script downloads the chrome drivers!) You can easily fix it with a bit of code if you want.
+
 Pre-requisites:
 
 You must have python. (If your copy of python doesnt work then try python 3.10!)
