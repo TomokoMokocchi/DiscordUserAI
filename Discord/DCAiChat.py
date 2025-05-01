@@ -71,9 +71,11 @@ def update():
         try:
             shutil.rmtree(path)
         except Exception as e:
-            print(e)
             pass
-        os.makedirs(path)
+        try:
+            os.makedirs(path)
+        except:
+            pass
         with urllib.request.urlopen(latestversion) as zipresp:
             with zipfile.ZipFile(BytesIO(zipresp.read())) as zfile:
                 zfile.extractall(path)
@@ -126,10 +128,7 @@ def sendmessage(msg,reply):
     }
     if reply!=None:
         try:
-            action = ActionChains(driver)
-            action.move_to_element(reply)
-            action.click()
-            action.perform()
+            driver.execute_script("arguments[0].click();", reply)
         except Exception as e:
             print(e,flush=True)
     def generate():
@@ -189,51 +188,46 @@ if __name__ == "__main__":
         passwordbox.send_keys(password)
         login = waitforelement(By.XPATH, '//div[text()="Log In"]')
         login.click()
+        timeschecked = 0
     def checkpings():
         global checkingpings
+        global timeschecked
         try:
-            aaa = driver.find_elements(By.XPATH, "//div[@class='numberBadge__2b1f5 base__2b1f5 eyebrow__2b1f5 baseShapeRound__2b1f5']")
-            checkingpings = True
-            for clicklol in aaa:
-                time.sleep(0.3)
-                try:
-                    oof = clicklol.find_element(By.XPATH, "./../../../../..")
-                    oof.click()
-                except:
-                    pass
-                try:
-                    oof = clicklol.find_element(By.XPATH, "./../../../..")
-                    oof.click()
-                except:
-                    pass
-                try:
-                    oof = clicklol.find_element(By.XPATH, "./../../../")
-                    oof.click()
-                except:
-                    pass
-                try:
-                    oof = clicklol.find_element(By.XPATH, "./../..")
-                    oof.click()
-                except:
-                    pass
-                try:
-                    action = ActionChains(driver)
-                    action.move_to_element(clicklol)
-                    action.move_by_offset(-25, 0)
-                    action.click()
-                    action.pause(0.5)
-                    action.click()
-                    action.move_to_element(clicklol)
-                    action.perform()
-                    time.sleep(0.5)
-                except Exception as e:
-                    pass
-                try:
-                    oof = clicklol.find_element(By.XPATH, "./../../../../..")
-                    oof.click()
-                except Exception as e:
-                    pass
-            checkingpings = False
+            timeschecked=timeschecked+1
+            if timeschecked>4:
+                checkingpings = True
+                driver.execute_script("""
+                                                                    function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
+function getOffset(el) {
+  const rect = el.getBoundingClientRect();
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY
+  };
+}
+try{
+el1 = getElementByXpath("//div[@class='lowerBadge_cc5dd2']")
+document.elementFromPoint(getOffset(el1).left-5, getOffset(el1).top+5).click();}catch{}
+try{
+el1 = getElementByXpath("//div[@class='unread__2ea32 unreadImportant__2ea32']")
+document.elementFromPoint(getOffset(el1).left+55, getOffset(el1).top).click();}catch{}
+try{
+el = getElementByXpath("//div[@class='unreadPill__972a0']")
+document.elementFromPoint(getOffset(el).left+55, getOffset(el).top).click();}catch{}
+try{
+getElementByXpath("//div[@id='guild-list-unread-dms']/div/div").click();
+ell = getElementByXpath("//div[@aria-owns='guild-list-unread-dms']")
+document.elementFromPoint(getOffset(ell).left+20, getOffset(ell).top).click();
+}catch{}
+try{
+getElementByXpath("//div[@id='guild-list-unread-dms']/div/div").click();}catch{}
+
+                                  """)
+                checkingpings = False
+                timeschecked = 0
         except:
             pass
 
@@ -268,10 +262,7 @@ if __name__ == "__main__":
                     try:
                         if pfp.split("size=")[0]!=localpfp.split("size=")[0]:
                             msgthing = driver.find_element(By.XPATH, "(//div[@class='contents_c19a55'])[last()]")
-                            action = ActionChains(driver)
-                            action.move_to_element(msgthing)
-                            action.perform()
-
+                            msgthing.click()
                             reply = driver.find_element(By.XPATH, "(//div[@aria-label='Reply'])[last()]")
                     except Exception as e:
                         pass
