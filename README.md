@@ -1,3 +1,5 @@
+DISCLAIMER: This tool and its contributers are not responsible for what happens to your discord account in any way. Self-botting is a bannable offense and this tool should not be used for any malicious purposes. (I recommend you only use this on an alt and only use it on your friends.)
+
 NOTICE: Currently this only works on windows machines! (Unless you modify how the python script downloads the chrome drivers!) You can easily fix it with a bit of code if you want.
 
 Pre-requisites:

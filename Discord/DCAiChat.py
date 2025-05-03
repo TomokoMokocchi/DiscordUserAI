@@ -134,7 +134,7 @@ def sendmessage(msg,reply):
     def generate():
         localgenerated = requests.post(url, headers=headers, json=data, verify=False)
         testa = localgenerated.json()['choices'][0]['message']['content']
-        if len(testa)>2000:
+        if len(testa)>1650:
             return generate()
         else:
             return testa
